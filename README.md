@@ -28,6 +28,9 @@ int main() {
     // La propriété la plus intéressante du vecteur est qu'il est extensible :
     // Si le vecteur est trop petit pour accueillir un nouvel élément, il s'étend automatiquement,
     // sans que l'utilisateur ait besoin de se soucier de ce détail d'implémentation
+    
+    // L'autre propriété magnifique du vecteur est qu'il peut accueillir n'importe quel type de données (même des tableaux où d'autres vecteurs),
+    // tant que vous en connaissez le type
 
     // ATTENTION : le C ne contient pas de notion d'encapsulation, cependant, vous êtes priés de ne
     // jamais, JAMAIS essayer d'accéder directement aux champs de la structure du vecteur.
