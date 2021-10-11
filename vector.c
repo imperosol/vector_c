@@ -1,14 +1,6 @@
 #include "vector.h"
 
 
-/* Code example of how to use those functions
- *
- *
- *
- *
- *
- * */
-
 
 static void extend_vector(Vector vect) {
     const unsigned int to_add = vect->mem_size / 2;
