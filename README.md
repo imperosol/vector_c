@@ -48,6 +48,39 @@ Vector arr_vector = new_vector_from_array(array, sizeof(int), 5);
 //                                   du tableau  élément      dans le tableau
 ```
 
+## Libération mémoire d'un Vector
+
+Lorsque l'usage d'un Vector est terminé, il doit impérativement être libéré de la mémoire avec la fonction drop_vector().
+
+```c
+Vector vect = new_vector(sizeof(int), 4);
+
+/* Utilisation du vecteur */
+
+drop_vector(vect); // libération du vecteur
+```
+
+Si les éléments d'un vecteur ont été dynamiquement alloués, ils doivent être eux-mêmes libérés avant la libération du vecteur.
+
+```c
+// v_size() et vector_get() sont des fonctions vues plus bas
+for (int i = 0; i < v_size(vect); ++i) {
+    free(vector_get(vect, i));
+}
+drop_vector(vect);
+```
+
+## Aggrandir un Vector
+
+### En ajoutant des éléments en dernière position
+
+Deux méthodes existent pour insérer en dernière position, en fonction de si on veut insérer une valeur ou bien plusieurs.
+
+* une seule valeur : vector_push()
+
+```c
+
+```
 # Exemple de code
 
 Un exemple vaut mieux que 1000 mots, donc voici un morceau de code qui utilise toutes les fonctions mises à disposition : 
