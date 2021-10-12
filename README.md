@@ -27,9 +27,9 @@ La création d'un Vector peut se faire de deux manières : soit en créant un Ve
 
 ```c
 Vector int_vector = new_vector(sizeof(int), 3);  // vecteur d'entiers
-                               ^^^^^^^^^^^  ^
-                               taille d'1   Capacité
-                               élément      initiale (en nombre d'éléments)
+//                             ^^^^^^^^^^^  ^
+//                             taille d'1   Capacité
+//                             élément      initiale (en nombre d'éléments)
 Vector double_vector = new_vector(sizeof(double), 2); // vecteur de flottants double précision
 Vector empty_vector = new_vector(sizeof(long), 0);  // on peut initialiser un vecteur vide
 Vector ptr_vector = new_vector(sizeof(int *), 2); // vecteur de pointeurs
@@ -43,9 +43,9 @@ Vector vect_vector = new_vector(sizeof(Vector), 2); // vecteur de vecteurs
 ```c
 int[5] array = {1, 2, 3, 4, 5};  // création d'un tableau
 Vector arr_vector = new_vector_from_array(array, sizeof(int), 5);
-                                          ^^^^^  ^^^^^^^^^^^  ^
-                                        adresse  taille d'un  nombre d'éléments
-                                     du tableau  élément      dans le tableau
+//                                        ^^^^^  ^^^^^^^^^^^  ^
+//                                      adresse  taille d'un  nombre d'éléments
+//                                   du tableau  élément      dans le tableau
 ```
 
 # Exemple de code
