@@ -30,10 +30,10 @@ Vector int_vector = new_vector(v_type(int), 3);  // vecteur d'entiers
 //                             ^^^^^^^^^^^  ^
 //                              type des   Capacité
 //                              éléments   initiale (en nombre d'éléments)
-Vector double_vector = new_vector(type(double), 2); // vecteur de flottants double précision
-Vector empty_vector = new_vector(type(long), 0);  // on peut initialiser un vecteur vide
-Vector ptr_vector = new_vector(type(int *), 2); // vecteur de pointeurs
-Vector vect_vector = new_vector(type(Vector), 2); // vecteur de vecteurs
+Vector double_vector = new_vector(v_type(double), 2); // vecteur de flottants double précision
+Vector empty_vector = new_vector(v_type(long), 0);  // on peut initialiser un vecteur vide
+Vector ptr_vector = new_vector(v_type(int *), 2); // vecteur de pointeurs
+Vector vect_vector = new_vector(v_type(Vector), 2); // vecteur de vecteurs
 
 /* De manière générale, on peut initialiser des vecteurs de n'importe quelle type */
 /* NB : type(t) est une macro définie dans le cadre de la bibliothèque et équivaut à écrire sizeof(t). */
@@ -47,6 +47,21 @@ Vector arr_vector = new_vector_from_array(array, v_type(int), 5);
 //                                        ^^^^^  ^^^^^^^^^  ^
 //                                      adresse  type des   nombre d'éléments
 //                                   du tableau  éléments   dans le tableau
+```
+
+### A partir d'un autre Vector
+
+La fonction new_vector_from_vector crée une copie d'un Vector déjà existant. Le nouveau Vector est totalement indépendant de l'ancien et ses modifications n'affectent pas le vecteur d'origine (et vice-versa).
+
+```c
+
+int[5] array = {1, 2, 3, 4, 5};  // création d'un tableau
+Vector vector = new_vector_from_array(array, v_type(int), 5);
+
+Vector copy_vector = new_vector_from_vector(vector);
+                                            ^^^^^^
+                                            vecteur
+                                            copié
 ```
 
 ## Libération mémoire d'un Vector
@@ -71,6 +86,31 @@ for (int i = 0; i < v_size(vect); ++i) {
 drop_vector(vect);
 ```
 
+## Effacer un Vector
+
+Il est également possible d'effacer un vecteur sans le détruire complètement en utilisant la fonction clear_vector(). Le vecteur est alors vidé de tous ses éléments sans pour autant être libéré de la mémoire.
+
+Cette fonction est à utiliser lorsque l'on veut effacer le contenu du vecteur mais que l'on compte continuer malgré à utiliser ce vecteur. Si l'usage du vecteur est terminé, la fonction drop_vector() doit être utilisée.
+
+Attention : après appel de la fonction clear_vector(), le type des éléments contenus dans le vecteur ne change pas !
+
+Tout comme pour la fonction drop_vector(), si des éléments d'un vecteur sont alloués dynamiquement, ils doivent être libérés **avant** l'appel de la fonction clear_vector().
+
+```c
+Vector vect = new_vector(v_type(int), 4);
+
+/* Utilisation du vecteur */
+
+clear_vector(vect); // réinitialisation du vector
+
+int a = 5;
+vector_push(vect, &a);  // Le vecteur peut encore être utilisé
+// La fonction vector_push() est abordée plus loin
+
+drop_vector(vect);  // Bien sûr, il ne faut pas oublier de jeter le vecteur à la fin de son usage.
+
+```
+
 ## Aggrandir un Vector
 
 ### En ajoutant des éléments en dernière position
@@ -85,7 +125,7 @@ Vector vect = new_vector(v_type(int), 2);
 int new_elem = 5;
 
 vector_push(vect, &new_elem);
-            ^^^^  ^^^^^^^^^
+//          ^^^^  ^^^^^^^^^
 //       vecteur  adresse de l'élément
 //     à étendre  à ajouter
 
@@ -101,86 +141,126 @@ vector_push(vect, &new_elem);
 ```
 
 * un tableau de valeurs : vector_push_array()
-* 
 ```c
 Vector vect = new_vector(v_type(int), 2);
 int arr_for_push[5] = {1, 3, 5, 7, 11};
 
 vector_push_array(vect, arrray_for_push, 5);
-                  ^^^^  ^^^^^^^^^^^^^^^  ^
-//             vecteur  adresse du      nombre d'éléments
-//           à étendre  tableau         du tableau
+//                ^^^^  ^^^^^^^^^^^^^^^  ^
+//             vecteur    adresse du    nombre d'éléments
+//           à étendre    tableau       du tableau
 
 /* Le vecteur contient à présent les valeurs 1, 3, 5, 7, 11, dans l'ordre */
 ```
-# Exemple de code
 
-Un exemple vaut mieux que 1000 mots, donc voici un morceau de code qui utilise toutes les fonctions mises à disposition : 
+### En insérant des éléments à un indice donné
+
+La fonction vector_insert() permet d'insérer un élément à un indice donné. Comme pour les tableaux, l'indice du premier élément d'un vecteur est 0.
 
 ```c
-#include <stdio.h>
-#include "vector.h"
+int[5] array = {1, 2, 3, 4, 5}; 
+Vector vect = new_vector_from_array(array, v_type(int), 5);
 
-// affichage du vecteur
-void display_vector(Vector vector) {
-    // vector_get_size() renvoie le nombre d'éléments présents dans le vecteur
-    int * elem_ptr;
-    for (int i = 0; i < vector_get_size(vector); ++i) {
-        // la fonction vector_get() renvoie un pointeur void. Il est impossible de l'afficher directement.
-        // Il faut d'abord caster le résultat de vector_get() vers un pointeur du type voulu,
-        // puis déréférencer ce pointeur
-        elem_ptr = (int *) vector_get(vector, i);
-        printf("%d; ", *elem_ptr);
-    }
-    printf("\n");
-}
+int new_elem = 6;
+vector_insert(vect, &new_elem,  2);
+//            ^^^^  ^^^^^^^^^   ^
+//         vecteur  adresse de  indice dans le
+//                  l'élément   vecteur où effectuer
+//                  à insérer   l'insertion
 
-int main() {
-    // La propriété la plus intéressante du vecteur est qu'il est extensible :
-    // Si le vecteur est trop petit pour accueillir un nouvel élément, il s'étend automatiquement,
-    // sans que l'utilisateur ait besoin de se soucier de ce détail d'implémentation
+/* Le vecteur contient à présent les valeurs 1, 2, 6, 3, 4, 5, dans l'ordre */
+```
 
-    // ATTENTION : le C ne contient pas de notion d'encapsulation, cependant, vous êtes priés de ne
-    // jamais, JAMAIS essayer d'accéder directement aux champs de la structure du vecteur.
-    // Passez impérativement par les fonctions dédiées, ça évitera les erreurs, et tout le monde se portera mieux
+## Retirer un élément d'un Vector
 
-    // Création du vecteur. Ici, on crée un vecteur d'entiers pouvant stocker trois éléments
-    Vector my_vector = new_vector(/*taille en mémoire d'un élément*/sizeof(int), /*Capacité initiale du vecteur*/3);
-    int a = 5; // Création d'un élément à insérer
-    // La fonction vector_push() insère un élément à la dernière position du vecteur.
-    // Les éléments doivent impérativement être donnés par adresse
-    vector_push(my_vector, /*adresse de l'élément à ajouter*/ &a);
-    a = 4;
-    // vector_push(my_vector, a); ne marche pas
-    // vector_push(my_vector, 4); ne marche pas non plus
-    // vector_push(my_vector, &4); toujours non, n'essayez même pas
-    vector_push(my_vector, &a);
-    a = 9;
-    // on peut insérer plusieurs fois un même élément
-    vector_push(my_vector, &a);
-    vector_push(my_vector, &a);
-    display_vector(my_vector); // 5; 4; 9; 9;
+Tout comme pour ajouter un élément dans un Vector, il existe deux cas pour retirer un élément d'un Vector : soit en retirant le dernier élément, soit en retirant l'élément d'un index donné.
 
-    // La fonction vector_insert() insère un élément à un index donné et décale les éléments suivants
-    // si l'index donné est hors des limites du vecteur, l'insertion ne se fait pas
-    a = 1;
-    vector_insert(my_vector, /*adresse de l'élément à ajouter*/ &a, /*index de l'élément*/ 2);
-    display_vector(my_vector); // 5; 4; 1; 9; 9;
+Contrairement aux fonctions d'insertion, qui ne retournent rien, les fonctions de délétion retournent un pointeur vers l'élément qui a été retiré du tableau.
 
-    // La fonction vector_pop() retire le dernier élément du vecteur et renvoie cet élément
-    // si le vecteur ne contient aucun élément, la fonction renvoie NULL
-    vector_pop(my_vector);
-    display_vector(my_vector); // 5; 4; 1; 9;
+### Retirer le dernier élément du Vector
 
-    // vector_remove() retire l'élément à l'index donné en argument et décale les éléments suivants
-    // d'un rang vers la gauche.
-    // vector_remove() renvoie l'élément retiré
-    vector_remove(my_vector, 1);
-    display_vector(my_vector); // 5; 1; 9;
+Pour retirer le dernier élément, on utilise la fonction vector_pop()
+```c
+int[5] array = {1, 2, 3, 4, 5}; 
+Vector vect = new_vector_from_array(array, v_type(int), 5);
 
-    // drop_vector() détruit le vecteur et libère la mémoire qu'il occupe
-    // ATTENTION : si des éléments du vecteur sont alloués dynamiquement, ils doivent être libérés au préalable
-    // pour éviter tout fuite de mémoire
-    drop_vector(my_vector);
-    return 0;
-}
+vector_pop(vect); // On retire le dernier élément sans chercher à le récupérer
+//         ^^^^
+//         vecteur
+//         dont on enlève
+//         le dernier élément
+
+// v_elem est une macro qui convertit le pointeur retourné par les fonctions de délétion dans le type donné en argument
+int poped_elem = v_elem(int, vector_pop(vect));
+                        ^^^  ^^^^^^^^^^
+                  type vers  fonction vector_pop()
+               lequel faire  retourne un pointeur
+              la conversion  qui doit être converti
+              
+printf("%d", poped_elem); // Affiche "4"
+
+/* Le vecteur contient à présent les valeur 1, 2 et 3, dans l'ordre */
+```
+
+### Retirer un élément à un indice donné
+
+Pour retirer à un indice donné, on utilise la fonction vector_remove(). Tout comme vector_pop(), vector_remove() renvoie un pointeur qui doit être converti vers le type voulu avec la macro v_type().
+```c
+int[5] array = {1, 2, 3, 4, 5}; 
+Vector vector = new_vector_from_array(array, v_type(int), 5);
+
+/* On supprime l'élément à l'indice 2 (ici : 3) */
+vector_remove(vector, 2); // On retire le dernier élément sans chercher à le récupérer
+//            ^^^^^^  ^
+//           vecteur  indice de l'élément
+//                    à retirer
+
+/* On supprime l'élément qui se trouve à présent à l'indice 2 (ici : 4) et on récupère cet élément */
+int poped_elem = v_elem(int, vector_remove(vect, 2));
+              
+printf("%d", poped_elem); // Affiche "4"
+
+/* Le vecteur contient à présent les valeur 1, 2 et 5, dans l'ordre */
+```
+
+## vector_get() et vector_set()
+
+vector_get() et vector_set() permettent respectivement de connaitre un élément à un indice de donner et de modifier un élément à un indice donné.
+
+Comme pour les fonctions de délétion, ces fonctions renvoient un pointeur qui doit être converti vers le type voulu à l'aide de v_elem.
+
+*Remarque : vector_get() et vector_set() peuvent respectivement être abbrégés en v_get() et v_set(), écriture qui sera utilisée dans la suite de la documentation.*
+
+### vector_get() (ou v_get())
+
+```c
+int[5] array = {1, 2, 3, 4, 5}; 
+Vector vector = new_vector_from_array(array, v_type(int), 5);
+
+void *elem = v_get(vector, 2);
+//                 ^^^^^^  ^
+//                vecteur  indice 
+//                         de l'élément
+
+// Conversion et affichage
+printf("%d", v_elem(int, elem));  // Affiche : "3"
+
+```
+
+
+### vector_set() (ou v_set())
+
+```c
+int[5] array = {1, 2, 3, 4, 5}; 
+Vector vector = new_vector_from_array(array, v_type(int), 5);
+
+int new_value = 9;
+v_set(vector, 2, &new_value);
+//    ^^^^^^  ^   ^^^^^^^^^
+//   ecteur indice  adresse du nouvel
+//                  élément
+
+/* Les éléments de vector sont à présent 1, 2, 9, 4 et 5, dans l'ordre */
+
+```
+
