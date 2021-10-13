@@ -76,11 +76,42 @@ drop_vector(vect);
 ### En ajoutant des éléments en dernière position
 
 Deux méthodes existent pour insérer en dernière position, en fonction de si on veut insérer une valeur ou bien plusieurs.
+Quelle que soit la fonction utilisée, l'augmentation de l'espace mémoire alloué au vecteur se fait automatiquement. L'utilisateur ne doit surtout pas essayer de gérer lui-même la mémoire allouée au vecteur (à moins d'être prêt à se prendre des bonnes grosses erreurs dans sa gueule).
 
 * une seule valeur : vector_push()
 
 ```c
+Vector vect = new_vector(v_type(int), 2);
+int new_elem = 5;
 
+vector_push(vect, &new_elem);
+            ^^^^  ^^^^^^^^^
+//       vecteur  adresse de l'élément
+//     à étendre  à ajouter
+
+new_elem = 4;
+vector_push(vect, &new_elem);
+
+new_elem = 3;
+vector_push(vect, &new_elem);
+// On peut ajouter plus d'éléments que la capacité initiale prévue lors de la création du vecteur.
+// Le vecteur est étendu automatiquement lorsqu'on dépasse sa capacité
+
+/* Le vecteur contient à présent les valeurs 5, 4 et 3, dans l'ordre */
+```
+
+* un tableau de valeurs : vector_push_array()
+* 
+```c
+Vector vect = new_vector(v_type(int), 2);
+int arr_for_push[5] = {1, 3, 5, 7, 11};
+
+vector_push_array(vect, arrray_for_push, 5);
+                  ^^^^  ^^^^^^^^^^^^^^^  ^
+//             vecteur  adresse du      nombre d'éléments
+//           à étendre  tableau         du tableau
+
+/* Le vecteur contient à présent les valeurs 1, 3, 5, 7, 11, dans l'ordre */
 ```
 # Exemple de code
 
