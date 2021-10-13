@@ -26,26 +26,27 @@ La création d'un Vector peut se faire de deux manières : soit en créant un Ve
 ### Vector vide
 
 ```c
-Vector int_vector = new_vector(sizeof(int), 3);  // vecteur d'entiers
-//                             ^^^^^^^^^^^  ^
-//                             taille d'1   Capacité
-//                             élément      initiale (en nombre d'éléments)
-Vector double_vector = new_vector(sizeof(double), 2); // vecteur de flottants double précision
-Vector empty_vector = new_vector(sizeof(long), 0);  // on peut initialiser un vecteur vide
-Vector ptr_vector = new_vector(sizeof(int *), 2); // vecteur de pointeurs
-Vector vect_vector = new_vector(sizeof(Vector), 2); // vecteur de vecteurs
+Vector int_vector = new_vector(type(int), 3);  // vecteur d'entiers
+//                             ^^^^^^^^^  ^
+//                             type des   Capacité
+//                             éléments   initiale (en nombre d'éléments)
+Vector double_vector = new_vector(type(double), 2); // vecteur de flottants double précision
+Vector empty_vector = new_vector(type(long), 0);  // on peut initialiser un vecteur vide
+Vector ptr_vector = new_vector(type(int *), 2); // vecteur de pointeurs
+Vector vect_vector = new_vector(type(Vector), 2); // vecteur de vecteurs
 
 /* De manière générale, on peut initialiser des vecteurs de n'importe quelle type */
+/* NB : type(t) est une macro définie dans le cadre de la bibliothèque et équivaut à écrire sizeof(t). */
 ```
 
 ### A partir d'un tableau
 
 ```c
 int[5] array = {1, 2, 3, 4, 5};  // création d'un tableau
-Vector arr_vector = new_vector_from_array(array, sizeof(int), 5);
-//                                        ^^^^^  ^^^^^^^^^^^  ^
-//                                      adresse  taille d'un  nombre d'éléments
-//                                   du tableau  élément      dans le tableau
+Vector arr_vector = new_vector_from_array(array, type(int), 5);
+//                                        ^^^^^  ^^^^^^^^^  ^
+//                                      adresse  type des   nombre d'éléments
+//                                   du tableau  éléments   dans le tableau
 ```
 
 ## Libération mémoire d'un Vector
@@ -53,7 +54,7 @@ Vector arr_vector = new_vector_from_array(array, sizeof(int), 5);
 Lorsque l'usage d'un Vector est terminé, il doit impérativement être libéré de la mémoire avec la fonction drop_vector().
 
 ```c
-Vector vect = new_vector(sizeof(int), 4);
+Vector vect = new_vector(type(int), 4);
 
 /* Utilisation du vecteur */
 
