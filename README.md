@@ -273,3 +273,58 @@ v_set(vector, 2, &new_value);
 
 ```
 
+## Opérations entre vecteurs
+
+### Concaténation de deux Vector
+
+On peut concaténer deux vecteurs avec la fonction `vector_append()`
+
+```c
+vector_append(vect_dest, vect_src);
+// L'appel de cette fonction ajoute le contenu de vect_src à vect_dest
+```
+
+## Les macros
+
+La bibliothèque vector.h comprend aussi des macros. Là où la plupart des fonctions ont un nom débutant par `vector_`, les macros ont des noms plus courts, commençant généralement par `v_`.
+
+### v_get()
+
+v_get() est un alias pour vector_get().
+
+### v_set()
+
+v_set() est un alias pour vector_set().
+
+### v_elem()
+
+v_elem() convertit un pointeur retourné par certaines fonctions en une variable exploitable
+```c
+int a = v_elem(int, v_get(vector, 0));
+//             ^^^
+//             type
+//        de conversion
+```
+### v_size()
+
+v_size() permet de connaitre le nombre d'éléments dans un vecteur
+```c
+int size = v_size(vector);
+```
+
+### v_display()
+
+v_diplay() permet d'afficher le contenu du vecteur dans le stdout. 
+```c
+int arr[5] = {1, 2, 3, 4, 5}
+Vector vector = new_vector_from_array(arr, v_type(int), 5);
+
+v_display(vector, int, "%d ; ");
+//        ^^^^^^  ^^^  ^^^^^^^
+//       vecteur  type  instructions 
+//    à afficher  du      de formatage
+//               vecteur
+
+/*Ici, v_display affichera "1 ; 2 ; 3 ; 4 ; 5"*/
+```
+
