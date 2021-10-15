@@ -1,4 +1,4 @@
-# Instroduction
+# Introduction
 
 Ma propre lib de vecteurs. C'est relativement simple à utiliser, faut juste penser à cast vers le bon type à chaque fois
 
@@ -12,6 +12,15 @@ Cette bibliothèque apporte donc une implémentation du Vector (ou vecteur, dans
 - l'augmentation automatique de l'espace mémoire allouée en cas de dépassement de la mémoire déjà allouée
 - la concaténation de deux vecteurs
 
+# Installation de la bibliothèqe
+
+1. Télécharger les fichiers
+    * Depuis Github : code > download ZIP
+    * Depuis Git : `git clone https://github.com/imperosol/vector_c.git <répertoire de téléchargement>`
+2. Copier les fichiers dans le répertoire du projet
+3. Ajouter les fichiers aux sources du projet :
+    * Sur Code::Blocks : project > add files > sélectionner les fichiers
+    * Sur CLion : ouvrir CMakeLists.txt > ajouter `vector.c vector.h` à la fin de la commande `add_executable()`
 
 # Maniement du Vector
 
